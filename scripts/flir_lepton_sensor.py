@@ -5,7 +5,6 @@ from pylepton.Lepton3 import Lepton3
 import datetime
 import time
 
-
 class flirLepton3Sensor(object):
     def __init__(self, device = "/dev/spidev0.0"):
         self.sensor = Lepton3(device)
@@ -39,4 +38,5 @@ class flirLepton3Sensor(object):
    
     # Gets current time stamp 
     def current_timestamp(self):
-        return datetime.datetime.now().strftime("%m_%d_%Y::%H_%M_%S")
+        return str(datetime.datetime.now()).split('.')[0]
+        #return datetime.datetime.now().strftime("%m_%d_%Y::%H_%M_%S")

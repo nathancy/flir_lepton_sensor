@@ -83,7 +83,7 @@ class Lepton3(Lepton):
         print "0x{0:04x} 0x{1:04x} : TTT={2} #{3:2} : crc={1}".format(fid, crc, ttt, fnum)
       print "---"
 
-    print "frame processed int {0}s, {1}hz".format(end-start, 1.0/(end-start))
+    #print "frame processed int {0}s, {1}hz".format(end-start, 1.0/(end-start))
 
     data_buffer.shape = (240, 80)
     data_buffer[:,:] = self._capture_buf[:,2:]

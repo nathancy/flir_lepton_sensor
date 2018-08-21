@@ -173,8 +173,10 @@ class Lepton(object):
         print("0x{0:04x} 0x{1:04x} : Row {2:2} : crc={1}".format(fid, crc, fnum))
       print("---")
 
+    '''
     if log_time:
-      print("frame processed int {0}s, {1}hz".format(end-start, 1.0/(end-start)))
+        print("frame processed int {0}s, {1}hz".format(end-start, 1.0/(end-start)))
+    '''
 
     # TODO: turn on telemetry to get real frame id, sum on this array is fast enough though (< 500us)
     return data_buffer, data_buffer.sum()
