@@ -5,6 +5,8 @@ import numpy as np
 import cv2
 from pylepton.Lepton3 import Lepton3
 
+directory = "photos"
+
 def capture(flip_v = False, device = "/dev/spidev0.0"):
   with Lepton3(device) as l:
     a,_ = l.capture()
@@ -35,4 +37,4 @@ if __name__ == '__main__':
     sys.exit(1)
 
   image = capture(flip_v = options.flip_v, device = options.device)
-  cv2.imwrite(args[0], image)
+  cv2.imwrite((directory + "/" + args[0]), image)
