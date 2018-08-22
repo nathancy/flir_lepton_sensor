@@ -9,7 +9,7 @@ class flirLepton3Sensor(object):
     def __init__(self, device = "/dev/spidev0.0"):
         self.sensor = Lepton3(device)
         self.directory = "photos"
-        self.file_extention = ".jpg"
+        self.file_extention = ".png"
 
     # Capture single frame
     def thermal_capture(self):
