@@ -25,21 +25,24 @@ class flirLepton3Sensor(object):
 
     # Capture single frame and record that frame
     def thermal_capture_record(self):
-        timestamp = str(datetime.datetime.now()).split('.')[0]
+        image_id = 0
+        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
         path = self.directory + "/" + timestamp
         self.create_directory(path)
         self.logger.initialize(path)
+        self.logger.clear()
         image = self.thermal_capture()
-        cv2.imwrite((path + "/" + self.file_extention), image)
+        cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
         self.logger.record(image_id)
 
     # Constantly record frames
     def thermal_capture_record_constant(self):
         image_id = 0
-        timestamp = str(datetime.datetime.now()).split('.')[0]
+        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
         path = self.directory + "/" + timestamp
         self.create_directory(path)
         self.logger.initialize(path)
+        self.logger.clear()
         while True:
             image = self.thermal_capture()
             cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
@@ -49,10 +52,11 @@ class flirLepton3Sensor(object):
     # Record frames for specific interval (seconds)
     def thermal_capture_record_interval(self, seconds):
         image_id = 0
-        timestamp = str(datetime.datetime.now()).split('.')[0]
+        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
         path = self.directory + "/" + timestamp
         self.create_directory(path)
         self.logger.initialize(path)
+        self.logger.clear()
         end_time = int(time.time()) + seconds
         while int(time.time()) < end_time:
             image = self.thermal_capture()
@@ -62,7 +66,7 @@ class flirLepton3Sensor(object):
    
     # Gets current time stamp 
     def current_timestamp(self):
-        return str(datetime.datetime.now()).split('.')[0]
+        return datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
 
     # Check if directory exists, if not then create it 
     def create_directory(self, path):

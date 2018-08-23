@@ -20,7 +20,13 @@ class CSV_Logger(object):
         self.csv_file.write("Image ID\n")
 
     def record(self, image_id):
-        msg = self.ser.readline().strip() + "," + str(image_id) + "\n"
-        self.csv_file.write(msg)
+        msg = self.ser.readline()
+        if '\0' not in msg:
+            msg = msg.strip() + "," + str(image_id) + "\n"
+            self.csv_file.write(msg)
+
+    def clear(self):
+        for num in range(10):
+            self.ser.readline()
 
 
