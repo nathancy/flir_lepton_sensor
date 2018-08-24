@@ -2,7 +2,8 @@ import serial
 
 class CSV_Logger(object):
     def initialize(self, path):
-        self.csv_file = open(path + "/" +  "data.csv", "w+")
+        self.output_file = "data.csv"
+        self.csv_file = open(path + "/" + self.output_file, "w+")
         self.ser = serial.Serial("/dev/ttyUSB0", 115200)
 
         # Write column description names
