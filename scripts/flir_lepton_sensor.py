@@ -11,9 +11,8 @@ from CSV_Logger import CSV_Logger
 class flirLepton3Sensor(object):
     def __init__(self, device = "/dev/spidev0.0"):
         self.sensor = Lepton3(device)
-        self.directory = "photos"
+        self.image_id = 0
         self.file_extention = ".png"
-        self.logger = CSV_Logger()
 
     # Capture single frame
     def thermal_capture(self):
@@ -23,6 +22,7 @@ class flirLepton3Sensor(object):
         np.right_shift(a, 8, a)
         return np.uint8(a)
 
+    '''
     # Capture single frame
     def thermal_capture_record(self):
         image_id = 0
@@ -55,19 +55,6 @@ class flirLepton3Sensor(object):
             cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
             image_id += 1
 
-    # Constantly record frames and record data to CSV file
-    def thermal_capture_record_constant_CSV_logging(self):
-        image_id = 0
-        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-        path = self.directory + "/" + timestamp
-        self.create_directory(path)
-        self.logger.initialize(path)
-        self.logger.clear()
-        while True:
-            image = self.thermal_capture()
-            cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-            self.logger.record_GPS_data(image_id)
-            image_id += 1
 
     # Record frames for specific interval (seconds) but dont record to CSV file
     def thermal_capture_record_interval(self, seconds):
@@ -96,15 +83,20 @@ class flirLepton3Sensor(object):
             self.logger.record_GPS_data(image_id)
             image_id += 1
    
+    '''
+    # Constantly record frames and record data to CSV file
+    def thermal_capture_record_constant_CSV_logging(self, path):
+        image = self.thermal_capture()
+        cv2.imwrite((path + "/" + str(self.image_id) + self.file_extention), image)
+        self.image_id += 1
+
+    def get_image_id(self):
+        return self.image_id
+
     # Gets current time stamp 
     def current_timestamp(self):
         return datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
 
-    # Check if directory exists, if not then create it 
-    def create_directory(self, path):
-        if not os.path.exists(path):
-            os.makedirs(path)
-   
     # Turn on ACT LED when logging
     def status_LED_enable(self):
         os.system("echo gpio | sudo tee /sys/class/leds/led0/trigger > /dev/null")
