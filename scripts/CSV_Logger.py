@@ -4,7 +4,7 @@ class CSV_Logger(object):
     def initialize(self, path):
         self.output_file = "data.csv"
         self.csv_file = open(path + "/" + self.output_file, "w+")
-        self.ser = serial.Serial("/dev/ttyUSB0", 115200)
+        self.ser = serial.Serial("/dev/ttyAMA0")
 
         # Write column description names
         self.csv_file.write("UTC Time,")
@@ -20,10 +20,12 @@ class CSV_Logger(object):
         self.csv_file.write("Checksum,")
         self.csv_file.write("Image ID\n")
 
-    def record(self, image_id):
+    def record_GPS_data(self, image_id):
         msg = self.ser.readline()
-        if '\0' not in msg:
-            msg = msg.strip() + "," + str(image_id) + "\n"
+        print(msg[:7])
+        if '\0' not in msg and msg[:7] == "$GPGGA,":
+            msg = msg[7:].strip() + "," + str(image_id) + "\n"
+            print(msg)
             self.csv_file.write(msg)
 
     def clear(self):

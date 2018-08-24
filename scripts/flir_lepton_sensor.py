@@ -42,7 +42,7 @@ class flirLepton3Sensor(object):
         self.logger.clear()
         image = self.thermal_capture()
         cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-        self.logger.record(image_id)
+        self.logger.record_GPS_data(image_id)
 
     # Constantly record frames but no logging to CSV file
     def thermal_capture_record_constant(self):
@@ -66,7 +66,7 @@ class flirLepton3Sensor(object):
         while True:
             image = self.thermal_capture()
             cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-            self.logger.record(image_id)
+            self.logger.record_GPS_data(image_id)
             image_id += 1
 
     # Record frames for specific interval (seconds) but dont record to CSV file
@@ -93,7 +93,7 @@ class flirLepton3Sensor(object):
         while int(time.time()) < end_time:
             image = self.thermal_capture()
             cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-            self.logger.record(image_id)
+            self.logger.record_GPS_data(image_id)
             image_id += 1
    
     # Gets current time stamp 
