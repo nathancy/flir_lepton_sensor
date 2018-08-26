@@ -1,23 +1,26 @@
 from flir_lepton_sensor import flirLepton3Sensor
-import multiprocessing
 from CSV_Logger import CSV_Logger
-
-sensor = flirLepton3Sensor()
-logger = CSV_Logger()
+from time import sleep
+import time
+from subprocess import Popen, PIPE
+import sys
 
 try:
-    sensor.status_LED_enable()
-    logger.GPS_logging_init()
-    path = logger.get_path()
+    GPS = Popen(['python', 'GPS.py'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    Sensor = Popen(['python', 'sensor.py'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
-    while True:
-        thermal_sensor = multiprocessing.Process(target=sensor.thermal_capture_record_constant_CSV_logging(path))
-        thermal_sensor.daemon = True
+    '''
+    # Read in path from GPS.py
+    out,_ = GPS.communicate()
+    print(GPS.communicate(out.decode().strip()))
 
-        GPS_logger = multiprocessing.Process(target=logger.record_GPS_data(sensor.get_image_id()))
-        GPS_logger.daemon = True
-        thermal_sensor.start()
-        GPS_logger.start()
+    
+    # Give path to sensor
+
+
+
+    #sensor_led.status_LED_enable()
+    '''
 except KeyboardInterrupt:
     print("Stopping sensor readings")
-    sensor.status_LED_disable()
+    #sensor_led.status_LED_disable()

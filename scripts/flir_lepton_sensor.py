@@ -96,6 +96,25 @@ class flirLepton3Sensor(object):
     # Gets current time stamp 
     def current_timestamp(self):
         return datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
+    
+    def get_path(self):
+        try:
+            with open("path.txt", "rb") as f:
+                return f.readline()
+        except IOError:
+            time.sleep(10)
+            with open("path.txt", "rb") as f:
+                return f.readline()
+
+    
+    # Check if directory exists, if not then create it 
+    def create_directory(self, path):
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+    def write_image_id(self):
+        fileHandle = open("image.txt", 'w')
+        fileHandle.write(str(self.image_id) + "\n")
 
     # Turn on ACT LED when logging
     def status_LED_enable(self):

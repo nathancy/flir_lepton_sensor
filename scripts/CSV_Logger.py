@@ -2,6 +2,7 @@ import serial
 import os
 import datetime
 import time
+from time import sleep
 
 class CSV_Logger(object):
     def __init__(self):
@@ -30,14 +31,21 @@ class CSV_Logger(object):
         self.csv_file.write("Image ID\n")
 
     def record_GPS_data(self, image_id):
-        #print(image_id)
+        '''
         msg = self.ser.readline()
         if msg[:7] == "$GPGGA,":
-            print(msg[:7])
-        if '\0' not in msg and msg[:7] == "$GPGGA,":
             msg = msg[7:].strip() + "," + str(image_id) + "\n"
-            print(msg)
             self.csv_file.write(msg)
+            print('wrote')
+
+        '''
+        msg = self.ser.readline()
+        while msg[:7] != "$GPGGA,":
+            msg = self.ser.readline()
+        if '\0' not in msg and msg[:7] == "$GPGGA,":
+            msg = msg[7:62].strip() + "," + str(image_id) + "\n"
+            self.csv_file.write(msg)
+            print("wrote")
 
     def clear(self):
         for num in range(10):
@@ -57,4 +65,23 @@ class CSV_Logger(object):
         if not os.path.exists(path):
             os.makedirs(path)
    
+    # Seconds
+    def time_passed(self, old_time, duration):
+        length = time.time() - old_time
+        while length < duration:
+            length = time.time() - old_time
+        return True    
 
+    def create_path_and_image_file(self, path):
+        path_file= open('path.txt', 'w')
+        path_file.write(path)
+        image_file = open('image.txt', 'w')
+
+    def get_latest_image_id(self):
+        if os.stat("image.txt").st_size == 0:
+            return 0
+        else:
+            fileHandle = open("image.txt", "r")
+            last_line = fileHandle.readlines()[-1]
+            fileHandle.close()
+            return last_line.strip()
