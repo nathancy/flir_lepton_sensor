@@ -1,3 +1,9 @@
+'''
+Filename: sensor.py
+Description: Script to constantly capture thermal images using the Flir Lepton 3 
+Usage: python sensor.py
+'''
+
 from flir_lepton_sensor import flirLepton3Sensor
 from time import sleep
 

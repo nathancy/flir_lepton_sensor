@@ -1,3 +1,10 @@
+'''
+Filename: GPS.py
+Description: Script to constantly log current GPS coordinates into a CSV file with the corresponding 
+             thermal image ID. Used together with sensor.py
+Usage: python GPS.py
+'''
+
 from CSV_Logger import CSV_Logger
 import os 
 import time

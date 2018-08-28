@@ -1,3 +1,8 @@
+'''
+Filename: flir_lepton_sensor.py
+Description: Class to control the Flir Lepton 3 sensor 
+'''
+
 import sys
 import numpy as np
 import cv2
@@ -5,8 +10,6 @@ from pylepton.Lepton3 import Lepton3
 import datetime
 import time
 import os
-import RPi.GPIO as GPIO
-from CSV_Logger import CSV_Logger
 
 class flirLepton3Sensor(object):
     def __init__(self, device = "/dev/spidev0.0"):
@@ -22,81 +25,21 @@ class flirLepton3Sensor(object):
         np.right_shift(a, 8, a)
         return np.uint8(a)
 
-    '''
-    # Capture single frame
-    def thermal_capture_record(self):
-        image_id = 0
-        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-        path = self.directory + "/" + timestamp
-        self.create_directory(path)
-        image = self.thermal_capture()
-        cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-
-    # Capture single frame and record that frame into CSV file
-    def thermal_capture_record_CSV_logging(self):
-        image_id = 0
-        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-        path = self.directory + "/" + timestamp
-        self.create_directory(path)
-        self.logger.initialize(path)
-        self.logger.clear()
-        image = self.thermal_capture()
-        cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-        self.logger.record_GPS_data(image_id)
-
-    # Constantly record frames but no logging to CSV file
-    def thermal_capture_record_constant(self):
-        image_id = 0
-        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-        path = self.directory + "/" + timestamp
-        self.create_directory(path)
-        while True:
-            image = self.thermal_capture()
-            cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-            image_id += 1
-
-
-    # Record frames for specific interval (seconds) but dont record to CSV file
-    def thermal_capture_record_interval(self, seconds):
-        image_id = 0
-        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-        path = self.directory + "/" + timestamp
-        self.create_directory(path)
-        end_time = int(time.time()) + seconds
-        while int(time.time()) < end_time:
-            image = self.thermal_capture()
-            cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-            image_id += 1
-
-    # Record frames for specific interval (seconds) and record data to CSV file
-    def thermal_capture_record_interval_CSV_logging(self, seconds):
-        image_id = 0
-        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-        path = self.directory + "/" + timestamp
-        self.create_directory(path)
-        self.logger.initialize(path)
-        self.logger.clear()
-        end_time = int(time.time()) + seconds
-        while int(time.time()) < end_time:
-            image = self.thermal_capture()
-            cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-            self.logger.record_GPS_data(image_id)
-            image_id += 1
-   
-    '''
-    # Constantly record frames and record data to CSV file
-    def thermal_capture_record_constant_CSV_logging(self, path):
+    # Turn recorded thermal captured frame into a image 
+    def thermal_capture_record(self, path):
         image = self.thermal_capture()
         cv2.imwrite((path + "/" + str(self.image_id) + self.file_extention), image)
         self.image_id += 1
 
+    # Get latest image id
     def get_image_id(self):
         return self.image_id
 
     # Gets current time stamp 
     def current_timestamp(self):
         return datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-    
+   
+    # Open text file to get path to place photos in
     def get_path(self):
         try:
             with open("path.txt", "rb") as f:
@@ -105,13 +48,13 @@ class flirLepton3Sensor(object):
             time.sleep(10)
             with open("path.txt", "rb") as f:
                 return f.readline()
-
     
     # Check if directory exists, if not then create it 
     def create_directory(self, path):
         if not os.path.exists(path):
             os.makedirs(path)
 
+    # Write latest image ID to text file 
     def write_image_id(self):
         fileHandle = open("image.txt", 'w')
         fileHandle.write(str(self.image_id) + "\n")

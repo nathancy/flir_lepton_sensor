@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+'''
+Filename: capture.py
+Description: Test script to capture a single thermal image frame from the Flir Lepton 3 sensor
+Usage: python capture.py <output_file.png>
+'''
 
 import sys
 import numpy as np
