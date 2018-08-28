@@ -42,6 +42,10 @@ with Lepton("/dev/spidev0.1") as l:
 
 ## Scripts
 
+### GPS.py and sensor.py
+
+This program will constantly capture thermal images and log the current GPS coordinates in a CSV file with the corresponding location where the image was taken. These are two separate programs that run independently. Run `GPS.py` then `sensor.py` in two separate terminals. Image output is placed into the `photos` directory where sessions are separated by timestamp. 
+
 ### capture.py
 
 This program will output any image format that opencv knows about, just specify the output file format extension (e.g. `output.jpg` or `output.png`)
