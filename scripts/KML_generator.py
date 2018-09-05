@@ -1,10 +1,8 @@
 from pykml.factory import KML_ElementMaker as KML
 from lxml import etree
 import csv
-import sys 
-
-kml_file_name = "image_map.kml"
-csv_file_name = "data.csv"
+import sys
+import os 
 
 # Convert Longtitude GPS Data (DMS -> DD)
 def Longitude_DMS_to_DD(raw_longitude, direction):
@@ -29,9 +27,39 @@ def resolution():
         resolution = 1
     return int(resolution)
 
+# Check for CSV in path, else check for CSV in current directory
+def path():
+    try:
+        with open(path_file_name, 'rb') as f:
+            print("Found path, using CSV file in specified path")
+            path = f.readline().strip()
+            if not path:
+                print("ERROR: Path file is empty")
+                exit(1)
+            else:
+                full_path = path + "/" + csv_file_name
+                if not os.path.exists(full_path):
+                    print("ERROR: CSV file not found in specified path")
+                    exit(1)
+                return full_path
+    except IOError:
+        print("Path file does not exist, attempting to use CSV file in current directory")
+        try:
+            with open(csv_file_name) as f:
+                print("Found CSV file in current directory")
+                return csv_file_name
+        except IOError: 
+            print("ERROR: CSV file not found in current directory")
+            exit(1)
+
+path_file_name = 'path.txt'
+kml_file_name = "image_map.kml"
+csv_file_name = 'data.csv'
+csv_file_path = path()
+
 doc = KML.Folder()
 
-with open(csv_file_name) as f:
+with open(csv_file_path) as f:
     reader = csv.reader(f)
 
     # Remove column description row
@@ -62,7 +90,7 @@ with open(csv_file_name) as f:
 
             except IndexError:
                 # Need to +2 cause CSV doesnt start and index 0 and removed description column row
-                print("ERROR: Line # " +  str(index + 2) + " is not valid, aborting point")
+                print("Note: Line #" +  str(index + 2) + " is not valid in data CSV file, aborting point")
 
 # Turn coordinate points into .kml file
 outfile = file(kml_file_name, 'w')
@@ -71,4 +99,3 @@ outfile.write('<kml xmlns="http://www.opengis.net/kml/2.2">\n')
 outfile.write(etree.tostring(doc, pretty_print = True))
 outfile.write('</kml>')
 print("KML file successfully generated!")
-
