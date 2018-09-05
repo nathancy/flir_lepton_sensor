@@ -1,6 +1,6 @@
 # flir_lepton_sensor
 
-Pure python library for capturing images from the Lepton over SPI (for example, on a Raspberry PI).
+Python module for capturing images from the Lepton over SPI (for example, on a Raspberry PI). Uses the Pylepton library for thermal image capture. Integrates GPS coordinates with corresponding thermal image and CSV logging. Contains scripts to convert CSV data into KML to be used with Google Earth image processing.
 
 ## Installation and Dependencies
 Requires `cv2` and `numpy` modules. To install:
@@ -44,7 +44,7 @@ with Lepton("/dev/spidev0.1") as l:
 
 ### GPS.py and sensor.py
 
-This program will constantly capture thermal images and log the current GPS coordinates in a CSV file with the corresponding location where the image was taken. These are two separate programs that run independently. Run `GPS.py` then `sensor.py` in two separate terminals. Image output is placed into the `photos` directory where sessions are separated by timestamp. 
+This program will constantly capture thermal images and log the current GPS coordinates in a CSV file with the corresponding location where the image was taken. These are two separate programs that run independently. Run `GPS.py` then `sensor.py` in two separate terminals. Image output is placed into the `photos` directory where sessions are separated by timestamp. These two scripts are run on bootup on the Raspberry Pi using Cron.
 
 ### capture.py
 
@@ -94,4 +94,18 @@ Options:
   -h, --help               show this help message and exit
   -f, --flip-vertical      flip the output images vertically
   -a ALPHA, --alpha=ALPHA  set lepton overlay opacity
+```
+
+### KML_generator.py
+
+This script will convert CSV data into KML for usage with Google Earth image processing. Resolution/Placemark density can be set by giving the script an argument. The default resolution is create a Placement for every line in the CSV file (with each line equivalent to 1 sample a second). Ex: Resolution = 10 means one Placemark point for every 10 lines in the CSV file.
+
+To convert CSV data into KML file:
+```
+python KML_generator.py [resolution]
+```
+
+Example: To generate a Placemark every 10 seconds
+```
+python KML_generator.py 10
 ```
