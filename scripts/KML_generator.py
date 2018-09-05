@@ -79,14 +79,16 @@ with open(csv_file_path) as f:
                 DD_latitude = Latitude_DMS_to_DD(float(DMS_latitude), latitude_direction)
                 DD_longitude = Longitude_DMS_to_DD(float(DMS_longitude), longitude_direction)
 
-                # Create KML point and append to list of points
-                point = KML.Placemark(
-                            KML.name(image_id),
-                            KML.Point(
-                                KML.coordinates(str(DD_longitude) + "," +  str(DD_latitude)),
+                # Check for invalid extra space in CSV file
+                if str(DD_longitude) != "0.0" and str(DD_longitude) != "0.0":
+                    # Create KML point and append to list of points
+                    point = KML.Placemark(
+                                KML.name(image_id),
+                                KML.Point(
+                                    KML.coordinates(str(DD_longitude) + "," +  str(DD_latitude)),
+                                    )
                                 )
-                            )
-                doc.append(point)
+                    doc.append(point)
 
             except IndexError:
                 # Need to +2 cause CSV doesnt start and index 0 and removed description column row
