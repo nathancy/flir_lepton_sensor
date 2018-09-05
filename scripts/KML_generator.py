@@ -1,3 +1,10 @@
+'''
+Filename: KML_generator.py
+Description: Script to convert collected CSV data into KML for usage with Google Earth. Default resolution
+             is every line in the CSV file (1 second). Ex: Resolution = 10 means one KML point every 10 lines
+Usage: python KML_generator.py <resolution #>
+'''
+
 from pykml.factory import KML_ElementMaker as KML
 from lxml import etree
 import csv
