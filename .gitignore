@@ -6,3 +6,4 @@ scripts/image.txt
 scripts/path.txt
 *.png
 *.jpg
+*.kml
