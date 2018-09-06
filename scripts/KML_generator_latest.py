@@ -1,9 +1,9 @@
 '''
-Filename: KML_generator.py
-Description: Script to convert selected CSV data file into KML for usage with 
+Filename: KML_generator_latest.py
+Description: Script to convert most recent collected CSV data in path.txt file into KML for usage with 
             Google Earth. Default resolution is every line in the CSV file (1 second). 
             Ex: Resolution = 10 means one KML point every 10 lines
-Usage: python KML_generator.py <resolution #>
+Usage: python KML_generator_latest.py <resolution #>
 '''
 
 from pykml.factory import KML_ElementMaker as KML
