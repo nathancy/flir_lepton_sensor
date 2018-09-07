@@ -7,7 +7,7 @@ class Window(QtGui.QMainWindow):
 
     def __init__(self):
         super(Window, self).__init__()
-        self.setGeometry(50, 50, 1000, 800)
+        self.setGeometry(0, 0, 1000, 800)
         self.setWindowTitle("Flir")
         self.setWindowIcon(QtGui.QIcon('pythonlogo.png'))
 
@@ -38,8 +38,10 @@ class Window(QtGui.QMainWindow):
         fileMenu.addAction(exit_action)
 
         self.statusBar()
-        self.home()
+        self.KML_resolution()
 
+        # Show the widgets onto the GUI, must be at the end
+        self.show()
         self.KML_generator_latest_filename = "KML_generator_latest.py"
         self.KML_generator_filename = "KML_generator.py"
 
@@ -54,13 +56,40 @@ class Window(QtGui.QMainWindow):
     # Menu option functions
     def generate_KML_file(self):
         CSV_file_path = QtGui.QFileDialog.getOpenFileName(self, 'Select CSV file', './', "Text files (*.csv)")
-        call(["python", self.KML_generator_filename, CSV_file_path])
+        print("value is " + self.resolution_value)
+        call(["python", self.KML_generator_filename, CSV_file_path, self.resolution_value])
 
     def generate_latest_KML_file(self):
-        call(["python", self.KML_generator_latest_filename])
+        print("value is " + self.resolution_value)
+        call(["python", self.KML_generator_latest_filename, self.resolution_value])
 
     def close_application(self):
         sys.exit()
+
+    def KML_resolution(self):
+        self.resolution_label = QtGui.QLabel('KML Resolution Value', self)
+        self.resolution_label.adjustSize()
+        # horizontal, vertical
+        self.resolution_label.move(15, 50)
+        
+        self.resolution_value_dropdown = QtGui.QComboBox(self)
+        self.resolution_value_dropdown.move(300,50)
+        self.resolution_value_dropdown.addItem("1")
+        self.resolution_value_dropdown.addItem("2")
+        self.resolution_value_dropdown.addItem("3")
+        self.resolution_value_dropdown.addItem("4")
+        self.resolution_value_dropdown.addItem("5")
+        self.resolution_value_dropdown.addItem("10")
+        self.resolution_value_dropdown.addItem("30")
+        self.resolution_value_dropdown.addItem("60")
+        self.resolution_value_dropdown.addItem("120")
+        self.resolution_value_dropdown.addItem("600")
+        self.resolution_value_dropdown.addItem("1200")
+        self.resolution_value_dropdown.addItem("3600")
+        self.resolution_value_dropdown.activated[str].connect(self.set_resolution_value)
+
+    def set_resolution_value(self, value):
+        self.resolution_value = value
 
 def run():
     app = QtGui.QApplication(sys.argv)
