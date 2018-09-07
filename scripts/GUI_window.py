@@ -10,6 +10,7 @@ class Window(QtGui.QMainWindow):
         self.setGeometry(0, 0, 1000, 800)
         self.setWindowTitle("Flir")
         self.setWindowIcon(QtGui.QIcon('pythonlogo.png'))
+        self.resolution_value = '1'
 
         # Create menubar
         mainMenu = self.menuBar()
@@ -56,11 +57,9 @@ class Window(QtGui.QMainWindow):
     # Menu option functions
     def generate_KML_file(self):
         CSV_file_path = QtGui.QFileDialog.getOpenFileName(self, 'Select CSV file', './', "Text files (*.csv)")
-        print("value is " + self.resolution_value)
         call(["python", self.KML_generator_filename, CSV_file_path, self.resolution_value])
 
     def generate_latest_KML_file(self):
-        print("value is " + self.resolution_value)
         call(["python", self.KML_generator_latest_filename, self.resolution_value])
 
     def close_application(self):
