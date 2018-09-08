@@ -4,9 +4,6 @@ import time
 
 logger = CSV_Logger()
 logger.GPS_logging_init()
-path = logger.get_path()
-logger.create_directory(path)
-logger.create_path_and_image_file(path)
 
 try:
     while True:
@@ -14,6 +11,5 @@ try:
         logger.record_GPS_data(image_id)
 except KeyboardInterrupt:
     print("stopped logging")
-
 
 

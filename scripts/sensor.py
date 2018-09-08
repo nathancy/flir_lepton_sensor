@@ -5,13 +5,13 @@ sensor = flirLepton3Sensor()
 
 try:
     sleep(1)
-    sensor.status_LED_enable()
-    path = sensor.get_path()
-    sensor.create_directory(path)
+    #sensor.status_LED_enable()
+    sensor.set_path()
+    #sensor.create_directory(path)
     while True:
-        sensor.thermal_capture_record_constant_CSV_logging(path)
+        sensor.thermal_capture_record_constant_CSV_logging()
         sensor.write_image_id()
 except KeyboardInterrupt:
-    sensor.status_LED_disable()
+    #sensor.status_LED_disable()
     print("stopping photo capture")
 

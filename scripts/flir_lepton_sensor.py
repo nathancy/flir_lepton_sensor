@@ -13,6 +13,9 @@ class flirLepton3Sensor(object):
         self.sensor = Lepton3(device)
         self.image_id = 0
         self.file_extention = ".png"
+        self.path_file = "path.txt"
+        self.image_file = "image.txt"
+        self.path = ""
 
     # Capture single frame
     def thermal_capture(self):
@@ -22,72 +25,10 @@ class flirLepton3Sensor(object):
         np.right_shift(a, 8, a)
         return np.uint8(a)
 
-    '''
-    # Capture single frame
-    def thermal_capture_record(self):
-        image_id = 0
-        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-        path = self.directory + "/" + timestamp
-        self.create_directory(path)
-        image = self.thermal_capture()
-        cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-
-    # Capture single frame and record that frame into CSV file
-    def thermal_capture_record_CSV_logging(self):
-        image_id = 0
-        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-        path = self.directory + "/" + timestamp
-        self.create_directory(path)
-        self.logger.initialize(path)
-        self.logger.clear()
-        image = self.thermal_capture()
-        cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-        self.logger.record_GPS_data(image_id)
-
-    # Constantly record frames but no logging to CSV file
-    def thermal_capture_record_constant(self):
-        image_id = 0
-        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-        path = self.directory + "/" + timestamp
-        self.create_directory(path)
-        while True:
-            image = self.thermal_capture()
-            cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-            image_id += 1
-
-
-    # Record frames for specific interval (seconds) but dont record to CSV file
-    def thermal_capture_record_interval(self, seconds):
-        image_id = 0
-        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-        path = self.directory + "/" + timestamp
-        self.create_directory(path)
-        end_time = int(time.time()) + seconds
-        while int(time.time()) < end_time:
-            image = self.thermal_capture()
-            cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-            image_id += 1
-
-    # Record frames for specific interval (seconds) and record data to CSV file
-    def thermal_capture_record_interval_CSV_logging(self, seconds):
-        image_id = 0
-        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-        path = self.directory + "/" + timestamp
-        self.create_directory(path)
-        self.logger.initialize(path)
-        self.logger.clear()
-        end_time = int(time.time()) + seconds
-        while int(time.time()) < end_time:
-            image = self.thermal_capture()
-            cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-            self.logger.record_GPS_data(image_id)
-            image_id += 1
-   
-    '''
     # Constantly record frames and record data to CSV file
-    def thermal_capture_record_constant_CSV_logging(self, path):
+    def thermal_capture_record_constant_CSV_logging(self):
         image = self.thermal_capture()
-        cv2.imwrite((path + "/" + str(self.image_id) + self.file_extention), image)
+        cv2.imwrite((self.path + "/" + str(self.image_id) + self.file_extention), image)
         self.image_id += 1
 
     def get_image_id(self):
@@ -97,14 +38,14 @@ class flirLepton3Sensor(object):
     def current_timestamp(self):
         return datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
     
-    def get_path(self):
+    def set_path(self):
         try:
-            with open("path.txt", "rb") as f:
-                return f.readline()
+            with open(self.path_file, "rb") as f:
+                self.path = f.readline()
         except IOError:
             time.sleep(10)
-            with open("path.txt", "rb") as f:
-                return f.readline()
+            with open(self.path_file, "rb") as f:
+                self.path = f.readline()
 
     
     # Check if directory exists, if not then create it 
@@ -113,7 +54,7 @@ class flirLepton3Sensor(object):
             os.makedirs(path)
 
     def write_image_id(self):
-        fileHandle = open("image.txt", 'w')
+        fileHandle = open(self.image_file, 'w')
         fileHandle.write(str(self.image_id) + "\n")
 
     # Turn on ACT LED when logging
