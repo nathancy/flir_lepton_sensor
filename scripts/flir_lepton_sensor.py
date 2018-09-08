@@ -13,8 +13,8 @@ class flirLepton3Sensor(object):
         self.sensor = Lepton3(device)
         self.image_id = 0
         self.file_extention = ".png"
-        self.path_file = "path.txt"
-        self.image_file = "image.txt"
+        self.path_file = "/home/pi/flir_lepton_sensor/scripts/path.txt"
+        self.image_file = "/home/pi/flir_lepton_sensor/scripts/image.txt"
         self.path = ""
 
     # Capture single frame
