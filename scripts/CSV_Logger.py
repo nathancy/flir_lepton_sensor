@@ -17,6 +17,7 @@ class CSV_Logger(object):
         self.path = ""
 
     def GPS_logging_init(self):
+        self.remove_previous_sessions()
         self.timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
         self.path = self.directory + "/" + self.timestamp
         self.create_directory()
@@ -50,6 +51,10 @@ class CSV_Logger(object):
         path_file = open(self.path_file, 'w')
         path_file.write(self.path)
         image_file = open(self.image_file, 'w')
+
+    def remove_previous_sessions(self):
+        os.system("sudo rm -rf /home/pi/flir_lepton_sensor/scripts/path.txt")
+        os.system("sudo rm -rf /home/pi/flir_lepton_sensor/scripts/image.txt")
 
     def record_GPS_data(self, image_id):
         msg = self.ser.readline()

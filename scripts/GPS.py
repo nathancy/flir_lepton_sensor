@@ -1,6 +1,4 @@
 from CSV_Logger import CSV_Logger
-import os 
-import time
 
 logger = CSV_Logger()
 logger.GPS_logging_init()
