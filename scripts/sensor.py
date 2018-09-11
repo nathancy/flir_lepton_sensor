@@ -1,3 +1,4 @@
+#!/usr/bin/python
 '''
 Filename: sensor.py
 Description: Script to constantly capture thermal images using the Flir Lepton 3 

@@ -35,20 +35,20 @@ class CSV_Logger(object):
    
     # Create CSV file and add column descriptions
     def create_CSV_file(self):
-        self.csv_file = open(self.path + "/" + self.output_file, "w")
-
-        self.csv_file.write("UTC Time,")
-        self.csv_file.write("Latitude,")
-        self.csv_file.write("North/South Indicator,")
-        self.csv_file.write("Longitude,")
-        self.csv_file.write("East/West Indicator,")
-        self.csv_file.write("GPS Quality Indicator,")
-        self.csv_file.write("Satellites Used,")
-        self.csv_file.write("HDOP,")
-        self.csv_file.write("Altitude,")
-        self.csv_file.write("DGPS Station ID,")
-        self.csv_file.write("Checksum,")
-        self.csv_file.write("Image ID\n")
+        with open(self.path + "/" + self.output_file, "w") as fp:
+            fp.write("UTC Time,")
+            fp.write("Latitude,")
+            fp.write("North/South Indicator,")
+            fp.write("Longitude,")
+            fp.write("East/West Indicator,")
+            fp.write("GPS Quality Indicator,")
+            fp.write("Satellites Used,")
+            fp.write("HDOP,")
+            fp.write("Altitude,")
+            fp.write("DGPS Station ID,")
+            fp.write("Checksum,")
+            fp.write("Image ID\n")
+            fp.close()
 
     def create_path_file(self):
         with open('path.txt', 'w') as fp:
@@ -68,7 +68,9 @@ class CSV_Logger(object):
             msg = self.ser.readline()
         if '\0' not in msg and msg[:7] == "$GPGGA,":
             msg = msg[7:62].strip() + "," + str(self.image_id) + "\n"
-            self.csv_file.write(msg)
+            with open(self.path + "/" + self.output_file, "a") as fp:
+                fp.write(msg)
+                fp.close()
             print("wrote with image # " + self.image_id)
 
     # Return last captured image id 
@@ -76,6 +78,7 @@ class CSV_Logger(object):
         image_number = ""
         with open('image.txt', 'r') as image_file:
             image_number = image_file.readline()
+            image_file.close()
         return image_number
 
     # Clear the GPS serial bus to ensure good values

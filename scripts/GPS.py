@@ -1,3 +1,4 @@
+#!/usr/bin/python
 '''
 Filename: GPS.py
 Description: Script to constantly log current GPS coordinates into a CSV file with the corresponding 

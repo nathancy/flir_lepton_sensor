@@ -4,23 +4,17 @@ from time import sleep
 import time
 from subprocess import Popen, PIPE
 import sys
+import os
 
 try:
-    GPS = Popen(['python', 'GPS.py'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    Sensor = Popen(['python', 'sensor.py'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-
     '''
-    # Read in path from GPS.py
-    out,_ = GPS.communicate()
-    print(GPS.communicate(out.decode().strip()))
-
-    
-    # Give path to sensor
-
-
-
-    #sensor_led.status_LED_enable()
+    os.system("python GPS.py &")
+    time.sleep(1)
+    os.system("python sensor.py &")
     '''
+    GPS = Popen(['python', 'GPS.py'])
+    time.sleep(1)
+    Sensor = Popen(['python', 'sensor.py'])
+
 except KeyboardInterrupt:
     print("Stopping sensor readings")
-    #sensor_led.status_LED_disable()
