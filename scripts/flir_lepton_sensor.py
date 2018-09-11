@@ -7,15 +7,37 @@ import sys
 import numpy as np
 import cv2
 from pylepton.Lepton3 import Lepton3
-import datetime
 import time
 import os
 
 class flirLepton3Sensor(object):
-    def __init__(self, device = "/dev/spidev0.0"):
+    def lepton_sensor_init(self, device = "/dev/spidev0.0"):
         self.sensor = Lepton3(device)
         self.image_id = 0
         self.file_extention = ".png"
+        self.path = self.get_path()
+        self.create_image_directory()
+        self.create_image_file()
+
+    # Open text file to get path to place photos in
+    def get_path(self):
+        try:
+            with open("path.txt", "r") as fp:
+                return fp.readline()
+        except IOError:
+            time.sleep(5)
+            with open("path.txt", "r") as fp:
+                return fp.readline()
+    
+    # Check if directory exists, if not then create it 
+    def create_image_directory(self):
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
+
+    def create_image_file(self):
+        with open('image.txt', 'w') as fp:
+            fp.write(str(0))
+            fp.close()
 
     # Capture single frame
     def thermal_capture(self):
@@ -26,38 +48,15 @@ class flirLepton3Sensor(object):
         return np.uint8(a)
 
     # Turn recorded thermal captured frame into a image 
-    def thermal_capture_record(self, path):
+    def thermal_capture_record(self):
         image = self.thermal_capture()
-        cv2.imwrite((path + "/" + str(self.image_id) + self.file_extention), image)
+        cv2.imwrite((self.path + "/" + str(self.image_id) + self.file_extention), image)
         self.image_id += 1
-
-    # Get latest image id
-    def get_image_id(self):
-        return self.image_id
-
-    # Gets current time stamp 
-    def current_timestamp(self):
-        return datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-   
-    # Open text file to get path to place photos in
-    def get_path(self):
-        try:
-            with open("path.txt", "rb") as f:
-                return f.readline()
-        except IOError:
-            time.sleep(10)
-            with open("path.txt", "rb") as f:
-                return f.readline()
-    
-    # Check if directory exists, if not then create it 
-    def create_directory(self, path):
-        if not os.path.exists(path):
-            os.makedirs(path)
 
     # Write latest image ID to text file 
     def write_image_id(self):
-        fileHandle = open("image.txt", 'w')
-        fileHandle.write(str(self.image_id) + "\n")
+        with open('image.txt', 'w') as fp:
+            fp.write(str(self.image_id))
 
     # Turn on ACT LED when logging
     def status_LED_enable(self):

@@ -13,23 +13,29 @@ import sys
 from time import sleep
 
 class CSV_Logger(object):
-    def __init__(self):
+    # Generate directory and path to place logging file
+    def GPS_logging_init(self):
         self.output_file = "data.csv"
         self.ser = serial.Serial("/dev/ttyAMA0")
         self.directory = "photos"
         self.file_extention = ".png"
-
-    # Generate directory and path to place logging file
-    def GPS_logging_init(self):
         self.timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
+        print(self.timestamp)
         self.path = self.directory + "/" + self.timestamp
-        self.create_directory(self.path)
-        self.generate_CSV_file(self.path)
+        self.create_image_directory()
+        self.create_CSV_file()
+        self.create_path_file()
+        self.create_image_file()
         self.clear_GPS_bus()
 
+    # Check if directory exists, if not then create it 
+    def create_image_directory(self):
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
+   
     # Create CSV file and add column descriptions
-    def generate_CSV_file(self, path):
-        self.csv_file = open(path + "/" + self.output_file, "w+")
+    def create_CSV_file(self):
+        self.csv_file = open(self.path + "/" + self.output_file, "w")
 
         self.csv_file.write("UTC Time,")
         self.csv_file.write("Latitude,")
@@ -44,53 +50,42 @@ class CSV_Logger(object):
         self.csv_file.write("Checksum,")
         self.csv_file.write("Image ID\n")
 
+    def create_path_file(self):
+        with open('path.txt', 'w') as fp:
+            fp.write(self.path)
+            fp.close()
+    
+    def create_image_file(self):
+        with open('image.txt', 'w') as fp:
+            fp.write(str(0))
+            fp.close()
+
     # Read serial bus for GPS data
-    def record_GPS_data(self, image_id):
+    def record_GPS_data(self):
+        self.image_id = self.get_latest_image_id()
         msg = self.ser.readline()
         while msg[:7] != "$GPGGA,":
             msg = self.ser.readline()
         if '\0' not in msg and msg[:7] == "$GPGGA,":
-            msg = msg[7:62].strip() + "," + str(image_id) + "\n"
+            msg = msg[7:62].strip() + "," + str(self.image_id) + "\n"
             self.csv_file.write(msg)
-            #print("wrote")
+            print("wrote with image # " + self.image_id)
+
+    # Return last captured image id 
+    def get_latest_image_id(self):
+        image_number = ""
+        with open('image.txt', 'r') as image_file:
+            image_number = image_file.readline()
+        return image_number
 
     # Clear the GPS serial bus to ensure good values
     def clear_GPS_bus(self):
         for num in range(10):
             self.ser.readline()
 
-    # Retrieve path of logging file
-    def get_path(self):
-        return self.path
-
-    # Check if directory exists, if not then create it 
-    def create_directory(self, path):
-        if not os.path.exists(path):
-            os.makedirs(path)
-   
-    # Check how many seconds have passed
-    def time_passed(self, old_time, duration):
-        length = time.time() - old_time
-        while length < duration:
-            length = time.time() - old_time
-        return True    
-
-    # Place path and image files
-    def create_path_and_image_file(self, path):
-        path_file= open('path.txt', 'w')
-        path_file.write(path)
-        image_file = open('image.txt', 'w')
-
-    # Return last captured image id 
-    def get_latest_image_id(self):
-        if os.stat("image.txt").st_size == 0:
-            return 0
-        else:
-            fileHandle = open("image.txt", "r")
-            last_line = fileHandle.readlines()[-1]
-            fileHandle.close()
-            return last_line.strip()
-
+    ###########################################
+    # Debug exceptions for problems when running in background
+    # Extracts failing function name from Traceback
     def setup_exception_logging(self):
         logging.basicConfig(filename="output.log",
                             filemode='w',
@@ -98,9 +93,6 @@ class CSV_Logger(object):
                             format='%(asctime)s - %(levelname)s - %(message)s',
                             )
 
-    ###########################################
-    # Debug exceptions for problems when running in background
-    # Extracts failing function name from Traceback
     def extract_function_name(self):
         tb = sys.exc_info()[-1]
         stk = traceback.extract_tb(tb, 1)
