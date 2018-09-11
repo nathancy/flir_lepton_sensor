@@ -7,6 +7,9 @@ import serial
 import os
 import datetime
 import time
+import logging
+import traceback
+import sys
 from time import sleep
 
 class CSV_Logger(object):
@@ -87,3 +90,28 @@ class CSV_Logger(object):
             last_line = fileHandle.readlines()[-1]
             fileHandle.close()
             return last_line.strip()
+
+    def setup_exception_logging(self):
+        logging.basicConfig(filename="output.log",
+                            filemode='w',
+                            level=logging.DEBUG,
+                            format='%(asctime)s - %(levelname)s - %(message)s',
+                            )
+
+    ###########################################
+    # Debug exceptions for problems when running in background
+    # Extracts failing function name from Traceback
+    def extract_function_name(self):
+        tb = sys.exc_info()[-1]
+        stk = traceback.extract_tb(tb, 1)
+        fname = stk[0][3]
+        return fname
+
+    def log_exception(self, e):
+        print("Error: Checkout output log")
+        logging.error(
+        "Function {function_name} raised {exception_class} ({exception_docstring}): {exception_message}".format(
+        function_name = self.extract_function_name(), #this is optional
+        exception_class = e.__class__,
+        exception_docstring = e.__doc__,
+        exception_message = e.message))

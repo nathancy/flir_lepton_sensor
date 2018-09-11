@@ -15,7 +15,7 @@ try:
     path = sensor.get_path()
     sensor.create_directory(path)
     while True:
-        sensor.thermal_capture_record_constant_CSV_logging(path)
+        sensor.thermal_capture_record(path)
         sensor.write_image_id()
 except KeyboardInterrupt:
     sensor.status_LED_disable()
