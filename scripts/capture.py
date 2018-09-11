@@ -35,9 +35,9 @@ if __name__ == '__main__':
 
   (options, args) = parser.parse_args()
 
+   
   if len(args) < 1:
-    print("You must specify an output filename")
-    sys.exit(1)
+    args.append("output.png")
 
   image = capture(flip_v = options.flip_v, device = options.device)
   cv2.imwrite(args[0], image)

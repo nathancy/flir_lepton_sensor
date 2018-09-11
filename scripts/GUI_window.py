@@ -2,6 +2,7 @@ from PyQt4 import QtGui, QtCore
 from subprocess import call
 import sys
 import os
+from capture import capture
 
 class Window(QtGui.QMainWindow):
 
@@ -13,7 +14,7 @@ class Window(QtGui.QMainWindow):
         self.resolution_value = '1'
 
         # Create menubar
-        mainMenu = self.menuBar()
+        mainMenu = self.menuBar() 
         fileMenu = mainMenu.addMenu("&File")
 
         # Menubar options
@@ -39,6 +40,7 @@ class Window(QtGui.QMainWindow):
         fileMenu.addAction(exit_action)
 
         self.statusBar()
+        self.single_thermal_image_capture()
         self.KML_resolution()
 
         # Show the widgets onto the GUI, must be at the end
@@ -65,14 +67,15 @@ class Window(QtGui.QMainWindow):
     def close_application(self):
         sys.exit()
 
+    # GUI elements
     def KML_resolution(self):
         self.resolution_label = QtGui.QLabel('KML Resolution Value', self)
         self.resolution_label.adjustSize()
         # horizontal, vertical
-        self.resolution_label.move(15, 50)
+        self.resolution_label.move(15, 100)
         
         self.resolution_value_dropdown = QtGui.QComboBox(self)
-        self.resolution_value_dropdown.move(300,50)
+        self.resolution_value_dropdown.move(300, 100)
         self.resolution_value_dropdown.addItem("1")
         self.resolution_value_dropdown.addItem("2")
         self.resolution_value_dropdown.addItem("3")
@@ -87,6 +90,16 @@ class Window(QtGui.QMainWindow):
         self.resolution_value_dropdown.addItem("3600")
         self.resolution_value_dropdown.activated[str].connect(self.set_resolution_value)
 
+    def single_thermal_image_capture(self):
+        self.single_thermal_image_capture_label = QtGui.QLabel("Single Thermal Image Capture", self)
+        self.single_thermal_image_capture_label.adjustSize()
+        self.single_thermal_image_capture_label.move(15, 150)
+
+        self.single_thermal_image_capture_button = QtGui.QPushButton("Capture", self)
+        self.single_thermal_image_capture_button.clicked.connect(capture)
+        self.single_thermal_image_capture_button.resize(140, 35)
+        self.single_thermal_image_capture_button.move(400, 150)
+    # Helpers
     def set_resolution_value(self, value):
         self.resolution_value = value
 
