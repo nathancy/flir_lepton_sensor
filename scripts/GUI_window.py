@@ -1,3 +1,9 @@
+'''
+Filename: GUI_window.py
+Description: Class to control the GUI for image processing, GPS/CSV logging, and KML generation.
+Usage: python GUI_window.py
+'''
+
 from PyQt4 import QtGui, QtCore
 from subprocess import call
 import sys
