@@ -8,7 +8,6 @@ from PyQt4 import QtGui, QtCore
 from subprocess import call
 import sys
 import os
-from capture import capture
 
 class Window(QtGui.QMainWindow):
 
@@ -53,14 +52,7 @@ class Window(QtGui.QMainWindow):
         self.show()
         self.KML_generator_latest_filename = "KML_generator_latest.py"
         self.KML_generator_filename = "KML_generator.py"
-
-
-    def home(self):
-        button = QtGui.QPushButton("Quit", self)
-        button.clicked.connect(self.close_application)
-        button.resize(100,100)
-        button.move(100,100)
-        self.show()
+        self.capture_image_filename = "capture.py"
 
     # Menu option functions
     def generate_KML_file(self):
@@ -102,9 +94,12 @@ class Window(QtGui.QMainWindow):
         self.single_thermal_image_capture_label.move(15, 150)
 
         self.single_thermal_image_capture_button = QtGui.QPushButton("Capture", self)
-        self.single_thermal_image_capture_button.clicked.connect(capture)
+        self.single_thermal_image_capture_button.clicked.connect(self.capture_thermal_image)
         self.single_thermal_image_capture_button.resize(140, 35)
         self.single_thermal_image_capture_button.move(400, 150)
+    def capture_thermal_image(self):
+        call(["python", self.capture_image_filename])
+
     # Helpers
     def set_resolution_value(self, value):
         self.resolution_value = value
