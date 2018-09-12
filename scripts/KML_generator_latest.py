@@ -82,6 +82,9 @@ with open(csv_file_path) as f:
                 DMS_longitude = row[3]
                 longitude_direction = row[4]
                 image_id = row[11]
+                
+                if image_id == "":
+                    continue
 
                 # Convert DMS latitude/longtitude coordinates to DD format
                 DD_latitude = Latitude_DMS_to_DD(float(DMS_latitude), latitude_direction)
