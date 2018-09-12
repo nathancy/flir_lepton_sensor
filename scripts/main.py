@@ -13,7 +13,6 @@ import sys
 import os
 
 try:
-    '''
     os.system("python GPS.py &")
     time.sleep(1)
     os.system("python sensor.py &")
@@ -21,6 +20,7 @@ try:
     GPS = Popen(['python', 'GPS.py'])
     time.sleep(1)
     Sensor = Popen(['python', 'sensor.py'])
+    '''
 
 except KeyboardInterrupt:
     print("Stopping sensor readings")
