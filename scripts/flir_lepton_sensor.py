@@ -15,6 +15,8 @@ class flirLepton3Sensor(object):
         self.sensor = Lepton3(device)
         self.image_id = 0
         self.file_extention = ".png"
+        self.path_file_name = "/home/pi/flir_lepton_sensor/scripts/path.txt"
+        self.image_file_name = "/home/pi/flir_lepton_sensor/scripts/image.txt"
         self.path = self.get_path()
         self.create_image_directory()
         self.create_image_file()
@@ -22,11 +24,11 @@ class flirLepton3Sensor(object):
     # Open text file to get path to place photos in
     def get_path(self):
         try:
-            with open("path.txt", "r") as fp:
+            with open(self.path_file_name, "r") as fp:
                 return fp.readline()
         except IOError:
             time.sleep(5)
-            with open("path.txt", "r") as fp:
+            with open(self.path_file_name, "r") as fp:
                 return fp.readline()
     
     # Check if directory exists, if not then create it 
@@ -35,7 +37,7 @@ class flirLepton3Sensor(object):
             os.makedirs(self.path)
 
     def create_image_file(self):
-        with open('image.txt', 'w') as fp:
+        with open(self.image_file_name, 'w') as fp:
             fp.write(str(0))
             fp.close()
 
@@ -55,7 +57,7 @@ class flirLepton3Sensor(object):
 
     # Write latest image ID to text file 
     def write_image_id(self):
-        with open('image.txt', 'w') as fp:
+        with open(self.image_file_name, 'w') as fp:
             fp.write(str(self.image_id))
 
     # Turn on ACT LED when logging

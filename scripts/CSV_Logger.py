@@ -15,9 +15,11 @@ from time import sleep
 class CSV_Logger(object):
     # Generate directory and path to place logging file
     def GPS_logging_init(self):
-        self.output_file = "data.csv"
         self.ser = serial.Serial("/dev/ttyAMA0")
-        self.directory = "photos"
+        self.directory = "/home/pi/flir_lepton_sensor/scripts/photos"
+        self.output_file_name = "data.csv"
+        self.path_file_name = "/home/pi/flir_lepton_sensor/scripts/path.txt"
+        self.image_file_name = "/home/pi/flir_lepton_sensor/scripts/image.txt"
         self.file_extention = ".png"
         self.timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
         print(self.timestamp)
@@ -35,7 +37,7 @@ class CSV_Logger(object):
    
     # Create CSV file and add column descriptions
     def create_CSV_file(self):
-        with open(self.path + "/" + self.output_file, "w") as fp:
+        with open(self.path + "/" + self.output_file_name, "w") as fp:
             fp.write("UTC Time,")
             fp.write("Latitude,")
             fp.write("North/South Indicator,")
@@ -51,12 +53,12 @@ class CSV_Logger(object):
             fp.close()
 
     def create_path_file(self):
-        with open('path.txt', 'w') as fp:
+        with open(self.path_file_name, 'w') as fp:
             fp.write(self.path)
             fp.close()
     
     def create_image_file(self):
-        with open('image.txt', 'w') as fp:
+        with open(self.image_file_name, 'w') as fp:
             fp.write(str(0))
             fp.close()
 
@@ -68,7 +70,7 @@ class CSV_Logger(object):
             msg = self.ser.readline()
         if '\0' not in msg and msg[:7] == "$GPGGA,":
             msg = msg[7:62].strip() + "," + str(self.image_id) + "\n"
-            with open(self.path + "/" + self.output_file, "a") as fp:
+            with open(self.path + "/" + self.output_file_name, "a") as fp:
                 fp.write(msg)
                 fp.close()
             print("wrote with image # " + self.image_id)
@@ -76,7 +78,7 @@ class CSV_Logger(object):
     # Return last captured image id 
     def get_latest_image_id(self):
         image_number = ""
-        with open('image.txt', 'r') as image_file:
+        with open(self.image_file_name, 'r') as image_file:
             image_number = image_file.readline()
             image_file.close()
         return image_number
