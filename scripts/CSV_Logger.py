@@ -69,7 +69,8 @@ class CSV_Logger(object):
         while msg[:7] != "$GPGGA,":
             msg = self.ser.readline()
         if '\0' not in msg and msg[:7] == "$GPGGA,":
-            msg = msg[7:62].strip() + "," + str(self.image_id) + "\n"
+            l = [x.strip() for x in msg[7:].split(",")]
+            msg = ",".join(l[:11]) + "," + str(self.image_id) + "\n"
             with open(self.path + "/" + self.output_file_name, "a") as fp:
                 fp.write(msg)
                 fp.close()
