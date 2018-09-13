@@ -113,17 +113,20 @@ class CSV_Logger(object):
     # Read serial bus for GPS data
     def record_GPS_data(self):
         self.image_id = self.get_latest_image_id()
+        # Ensure image_id is not blank
         if self.image_id.isdigit():
             msg = self.ser.readline()
             while msg[:7] != "$GPGGA,":
                 msg = self.ser.readline()
             if '\0' not in msg and msg[:7] == "$GPGGA,":
                 l = [x.strip() for x in msg[7:].split(",")]
-                msg = ",".join(l[:11]) + "," + str(self.image_id) + "\n"
-                with open(self.path + "/" + self.output_file_name, "a") as fp:
-                    fp.write(msg)
-                    fp.close()
-                print("wrote with image # " + self.image_id)
+                # Ensure GPS Quality indicator is not 0 (position fix unavailable)
+                if l[5] != '0':
+                    # Grab all fields from 1-11 on datasheet
+                    msg = ",".join(l[:11]) + "," + str(self.image_id) + "\n"
+                    with open(self.path + "/" + self.output_file_name, "a") as fp:
+                        fp.write(msg)
+                    print("wrote with image # " + self.image_id)
 
     # Return last captured image id 
     def get_latest_image_id(self):
