@@ -145,6 +145,8 @@ class CSV_Logger(object):
 
     ###########################################
     # Debug exceptions for problems when running in background
+    ###########################################
+
     # Extracts failing function name from Traceback
     def setup_exception_logging(self):
         logging.basicConfig(filename="output.log",
@@ -167,3 +169,16 @@ class CSV_Logger(object):
         exception_class = e.__class__,
         exception_docstring = e.__doc__,
         exception_message = e.message))
+
+    ###########################################
+    # LED Debug lights
+    ###########################################
+    # Turn on ACT LED when logging
+    def status_LED_enable(self):
+        os.system("echo gpio | sudo tee /sys/class/leds/led0/trigger > /dev/null")
+        os.system("echo 1 | sudo tee /sys/class/leds/led0/brightness > /dev/null")
+
+    # Turn off ACT LED when not logging 
+    def status_LED_disable(self):
+        os.system("echo gpio | sudo tee /sys/class/leds/led0/trigger > /dev/null")
+        os.system("echo 0 | sudo tee /sys/class/leds/led0/brightness > /dev/null")

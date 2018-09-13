@@ -57,12 +57,3 @@ class flirLepton3Sensor(object):
         with open(self.image_file_name, 'w') as fp:
             fp.write(str(self.image_id))
 
-    # Turn on ACT LED when logging
-    def status_LED_enable(self):
-        os.system("echo gpio | sudo tee /sys/class/leds/led0/trigger > /dev/null")
-        os.system("echo 1 | sudo tee /sys/class/leds/led0/brightness > /dev/null")
-
-    # Turn off ACT LED when not logging 
-    def status_LED_disable(self):
-        os.system("echo gpio | sudo tee /sys/class/leds/led0/trigger > /dev/null")
-        os.system("echo 0 | sudo tee /sys/class/leds/led0/brightness > /dev/null")
