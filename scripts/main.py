@@ -1,26 +1,28 @@
+'''
+Filename: main.py
+Description: Script to run the GPS/CSV logger and image capture programs in the background 
+Usage: python main.py
+Note: Can't use crontab to call this file, will not work. This file is to be used only in
+      terminals while the pi is on.
+'''
+
 from flir_lepton_sensor import flirLepton3Sensor
 from CSV_Logger import CSV_Logger
 from time import sleep
 import time
 from subprocess import Popen, PIPE
 import sys
+import os
 
 try:
-    GPS = Popen(['python', 'GPS.py'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    Sensor = Popen(['python', 'sensor.py'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-
+    os.system("python GPS.py &")
+    time.sleep(1)
+    os.system("python sensor.py &")
     '''
-    # Read in path from GPS.py
-    out,_ = GPS.communicate()
-    print(GPS.communicate(out.decode().strip()))
-
-    
-    # Give path to sensor
-
-
-
-    #sensor_led.status_LED_enable()
+    GPS = Popen(['python', 'GPS.py', '&'])
+    time.sleep(1)
+    Sensor = Popen(['python', 'sensor.py', '&'])
     '''
+
 except KeyboardInterrupt:
     print("Stopping sensor readings")
-    #sensor_led.status_LED_disable()

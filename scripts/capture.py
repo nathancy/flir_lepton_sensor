@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+'''
+Filename: capture.py
+Description: Test script to capture a single thermal image frame from the Flir Lepton 3 sensor
+Usage: python capture.py <output_file.png>
+'''
 
 import sys
 import numpy as np
@@ -30,9 +35,9 @@ if __name__ == '__main__':
 
   (options, args) = parser.parse_args()
 
+   
   if len(args) < 1:
-    print("You must specify an output filename")
-    sys.exit(1)
+    args.append("output.png")
 
   image = capture(flip_v = options.flip_v, device = options.device)
   cv2.imwrite(args[0], image)

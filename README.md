@@ -1,9 +1,10 @@
 # flir_lepton_sensor
 
-Pure python library for capturing images from the Lepton over SPI (for example, on a Raspberry PI).
+Python module for capturing images from the Lepton over SPI (for example, on a Raspberry PI). Uses the Pylepton library for thermal image capture. Integrates GPS coordinates with corresponding thermal image and CSV logging. Contains scripts to convert CSV data into KML to be used with Google Earth image processing. Also contains GUI for accessing functions.
 
 ## Installation and Dependencies
-Requires `cv2` and `numpy` modules. To install:
+#### Thermal Imaging
+The thermal imaging module requires `cv2` and `numpy` modules. To install:
 ```
 sudo apt-get install python-opencv python-numpy
 ```
@@ -12,6 +13,27 @@ Next, to install into site-packages for distribution through a distutils setup:
 ```
 cd library
 sudo python setup.py install
+```
+
+#### KML generation
+Requires pyKML and lxml. To install:
+```
+sudo apt-get install libxml2-dev libxslt-dev python-dev
+sudo apt-get install python-lxml
+sudo pip install pykml
+```
+
+#### GUI  
+Requires PyQt4. To install:
+```
+sudo apt-get install python-qt4
+```
+
+#### Cron reboot scheduler
+
+To install Raspberry Pi onboot script startup using Cron:
+```
+sudo apt-get install gnome-schedule
 ```
 
 ## Example Usage
@@ -41,6 +63,32 @@ with Lepton("/dev/spidev0.1") as l:
 ```
 
 ## Scripts
+
+### GPS.py and sensor.py
+
+This program will constantly capture thermal images and log the current GPS coordinates in a CSV file with the corresponding location where the image was taken. These are two separate programs that run independently. Run `GPS.py` then `sensor.py` in two separate terminals. Or run `main.py` which will run the two scripts in the background.
+```
+python main.py
+```
+To kill the two background processes, you may need to kill the individual processes. To check background processes:
+```
+ps aux | grep python
+sudo kill <PID>
+```
+
+The program obtains the timestamp from the GPS module so it does not require internet access to run the logger. 
+Image output is placed into the `photos` directory where sessions are separated by timestamp. These two scripts are run on bootup on the Raspberry Pi using Cron.
+
+To edit crontab:
+```
+crontab -e
+```
+
+Place these two lines inside to start the script on reboot or power cycle
+```
+@reboot python /home/pi/flir_lepton_sensor/scripts/GPS.py &
+@reboot python /home/pi/flir_lepton_sensor/scripts/sensor.py &
+```
 
 ### capture.py
 
@@ -90,4 +138,25 @@ Options:
   -h, --help               show this help message and exit
   -f, --flip-vertical      flip the output images vertically
   -a ALPHA, --alpha=ALPHA  set lepton overlay opacity
+```
+
+### KML_generator_latest.py
+
+This script will convert CSV data into KML for usage with Google Earth image processing. Resolution/Placemark density can be set by giving the script an argument. The default resolution is create a Placement for every line in the CSV file (with each line equivalent to 1 sample a second). Ex: Resolution = 10 means one Placemark point for every 10 lines in the CSV file.
+
+To convert CSV data into KML file:
+```
+python KML_generator_latest.py [resolution]
+```
+
+Example: To generate a Placemark every 10 seconds
+```
+python KML_generator_latest.py 10
+```
+
+### GUI_window.py
+This script will open a GUI that has the functionality of all these other scripts. Enables image capture and KML generation.
+
+```
+python GUI_window.py
 ```

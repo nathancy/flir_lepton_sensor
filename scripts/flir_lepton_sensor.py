@@ -1,18 +1,42 @@
+'''
+Filename: flir_lepton_sensor.py
+Description: Class to control the Flir Lepton 3 sensor 
+'''
+
 import sys
 import numpy as np
 import cv2
 from pylepton.Lepton3 import Lepton3
-import datetime
 import time
 import os
-import RPi.GPIO as GPIO
-from CSV_Logger import CSV_Logger
 
 class flirLepton3Sensor(object):
-    def __init__(self, device = "/dev/spidev0.0"):
+    def lepton_sensor_init(self, device = "/dev/spidev0.0"):
         self.sensor = Lepton3(device)
         self.image_id = 0
         self.file_extention = ".png"
+        self.path_file_name = "/home/pi/flir_lepton_sensor/scripts/path.txt"
+        self.image_file_name = "/home/pi/flir_lepton_sensor/scripts/image.txt"
+        self.path = self.get_path()
+        self.create_image_directory()
+        self.create_image_file()
+
+    # Open text file to get path to place photos in
+    def get_path(self):
+        while not os.path.exists(self.path_file_name):
+            time.sleep(1)
+        with open(self.path_file_name, "r") as fp:
+            return fp.readline()
+    
+    # Check if directory exists, if not then create it 
+    def create_image_directory(self):
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
+
+    def create_image_file(self):
+        with open(self.image_file_name, 'w') as fp:
+            fp.write(str(0))
+            fp.close()
 
     # Capture single frame
     def thermal_capture(self):
@@ -22,106 +46,14 @@ class flirLepton3Sensor(object):
         np.right_shift(a, 8, a)
         return np.uint8(a)
 
-    '''
-    # Capture single frame
+    # Turn recorded thermal captured frame into a image 
     def thermal_capture_record(self):
-        image_id = 0
-        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-        path = self.directory + "/" + timestamp
-        self.create_directory(path)
         image = self.thermal_capture()
-        cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-
-    # Capture single frame and record that frame into CSV file
-    def thermal_capture_record_CSV_logging(self):
-        image_id = 0
-        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-        path = self.directory + "/" + timestamp
-        self.create_directory(path)
-        self.logger.initialize(path)
-        self.logger.clear()
-        image = self.thermal_capture()
-        cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-        self.logger.record_GPS_data(image_id)
-
-    # Constantly record frames but no logging to CSV file
-    def thermal_capture_record_constant(self):
-        image_id = 0
-        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-        path = self.directory + "/" + timestamp
-        self.create_directory(path)
-        while True:
-            image = self.thermal_capture()
-            cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-            image_id += 1
-
-
-    # Record frames for specific interval (seconds) but dont record to CSV file
-    def thermal_capture_record_interval(self, seconds):
-        image_id = 0
-        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-        path = self.directory + "/" + timestamp
-        self.create_directory(path)
-        end_time = int(time.time()) + seconds
-        while int(time.time()) < end_time:
-            image = self.thermal_capture()
-            cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-            image_id += 1
-
-    # Record frames for specific interval (seconds) and record data to CSV file
-    def thermal_capture_record_interval_CSV_logging(self, seconds):
-        image_id = 0
-        timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-        path = self.directory + "/" + timestamp
-        self.create_directory(path)
-        self.logger.initialize(path)
-        self.logger.clear()
-        end_time = int(time.time()) + seconds
-        while int(time.time()) < end_time:
-            image = self.thermal_capture()
-            cv2.imwrite((path + "/" + str(image_id) + self.file_extention), image)
-            self.logger.record_GPS_data(image_id)
-            image_id += 1
-   
-    '''
-    # Constantly record frames and record data to CSV file
-    def thermal_capture_record_constant_CSV_logging(self, path):
-        image = self.thermal_capture()
-        cv2.imwrite((path + "/" + str(self.image_id) + self.file_extention), image)
+        cv2.imwrite((self.path + "/" + str(self.image_id) + self.file_extention), image)
         self.image_id += 1
 
-    def get_image_id(self):
-        return self.image_id
-
-    # Gets current time stamp 
-    def current_timestamp(self):
-        return datetime.datetime.now().strftime("%m_%d_%Y_%H%M%S")
-    
-    def get_path(self):
-        try:
-            with open("path.txt", "rb") as f:
-                return f.readline()
-        except IOError:
-            time.sleep(10)
-            with open("path.txt", "rb") as f:
-                return f.readline()
-
-    
-    # Check if directory exists, if not then create it 
-    def create_directory(self, path):
-        if not os.path.exists(path):
-            os.makedirs(path)
-
+    # Write latest image ID to text file 
     def write_image_id(self):
-        fileHandle = open("image.txt", 'w')
-        fileHandle.write(str(self.image_id) + "\n")
+        with open(self.image_file_name, 'w') as fp:
+            fp.write(str(self.image_id))
 
-    # Turn on ACT LED when logging
-    def status_LED_enable(self):
-        os.system("echo gpio | sudo tee /sys/class/leds/led0/trigger > /dev/null")
-        os.system("echo 1 | sudo tee /sys/class/leds/led0/brightness > /dev/null")
-
-    # Turn off ACT LED when not logging 
-    def status_LED_disable(self):
-        os.system("echo gpio | sudo tee /sys/class/leds/led0/trigger > /dev/null")
-        os.system("echo 0 | sudo tee /sys/class/leds/led0/brightness > /dev/null")

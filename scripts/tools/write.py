@@ -1,3 +1,8 @@
+'''
+Filename: write.py
+Description: Emulate GPS data and send to serial bus
+Usage: python write.py 
+'''
 import time
 import serial
 s = serial.Serial("/dev/ttyUSB1", 115200)
