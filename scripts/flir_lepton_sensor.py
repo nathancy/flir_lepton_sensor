@@ -23,13 +23,10 @@ class flirLepton3Sensor(object):
 
     # Open text file to get path to place photos in
     def get_path(self):
-        try:
-            with open(self.path_file_name, "r") as fp:
-                return fp.readline()
-        except IOError:
-            time.sleep(5)
-            with open(self.path_file_name, "r") as fp:
-                return fp.readline()
+        while not os.path.exists(self.path_file_name):
+            time.sleep(1)
+        with open(self.path_file_name, "r") as fp:
+            return fp.readline()
     
     # Check if directory exists, if not then create it 
     def create_image_directory(self):

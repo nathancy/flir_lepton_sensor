@@ -9,7 +9,6 @@ from flir_lepton_sensor import flirLepton3Sensor
 from time import sleep
 
 try:
-    sleep(1)
     sensor = flirLepton3Sensor()
     sensor.lepton_sensor_init()
     #sensor.status_LED_enable()

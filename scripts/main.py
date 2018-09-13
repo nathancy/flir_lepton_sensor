@@ -2,6 +2,8 @@
 Filename: main.py
 Description: Script to run the GPS/CSV logger and image capture programs in the background 
 Usage: python main.py
+Note: Can't use crontab to call this file, will not work. This file is to be used only in
+      terminals while the pi is on.
 '''
 
 from flir_lepton_sensor import flirLepton3Sensor
@@ -17,9 +19,9 @@ try:
     time.sleep(1)
     os.system("python sensor.py &")
     '''
-    GPS = Popen(['python', 'GPS.py'])
+    GPS = Popen(['python', 'GPS.py', '&'])
     time.sleep(1)
-    Sensor = Popen(['python', 'sensor.py'])
+    Sensor = Popen(['python', 'sensor.py', '&'])
     '''
 
 except KeyboardInterrupt:
